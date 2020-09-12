@@ -3,9 +3,9 @@
 # using etherwake
 
 
-filename='macaddrs.txt'
+filename="macaddrs.txt"
 
 while read line; do
-    echo 'Waking up $line...\n'
+    echo "Waking up $line...\n"
     etherwake -i eth0 $line
-done << $filename
+done < $filename
