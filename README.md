@@ -8,4 +8,4 @@ Default txt file is macaddrs.txt.
     - Debian Based (Ubuntu, raspiOS, etc...):
         - `sudo apt install etherwake`
     - Arch Linux
-        - `sudo yum install etherwake`
+        - `yay -S etherwake`
