@@ -14,15 +14,18 @@ def getArguments():
 
 
 def wakeMac(mac):
-    #subprocess.call(["etherwake", "-i eth0 %s" % mac]):
+    #subprocess.call(['etherwake', '-i eth0 %s' % mac]):
     print('Would run etherwake -i eth0 %s' % mac)
     return
 
 
 def wakeGroup(group):
-    for mac in group:
+    for target in group:
         # this part will be multi threaded
-        # also need to ping the target before sending wake packet
+        mac = group['mac']
+        ip = group['ip']
+        # ping target
+
         wakeMac(mac)
     return
 
@@ -33,6 +36,7 @@ def main():
     file = args.file
 
     # load json
+    # will need validate that the json is structured properly before progressing
     with open(file) as f:
         data = json.load(f)
     
