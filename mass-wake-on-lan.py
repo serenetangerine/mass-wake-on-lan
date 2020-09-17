@@ -22,11 +22,17 @@ def wakeMac(mac):
 def wakeGroup(group):
     for target in group:
         # this part will be multi threaded
-        mac = group['mac']
-        ip = group['ip']
+        mac = target['mac']
+        ip = target['ip']
         # ping target
-
-        wakeMac(mac)
+        print('\nPinging %s...' % (ip))
+        child = subprocess.Popen(['ping', '-c', '1', '%s' % (ip)], stdout=subprocess.PIPE)
+        streamdata = child.communicate()[0]
+        # check exit code
+        if child.returncode != 0:
+            wakeMac(mac)
+        else:
+            print('%s is up!' % (ip))
     return
 
 

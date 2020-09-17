@@ -1,7 +1,7 @@
 # mass-wake-on-lan
 ## Overview:
 A python3 script that reads from a json file to send wake on lan calls using etherwake.
-Default json file is macaddrs.json.
+Default json file is targets.json.
 
 ## Dependencies:
 - `etherwake` 
