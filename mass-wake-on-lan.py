@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import subprocess
-import argparse
+from threading import Thread
 
 
 def getArguments():
@@ -31,11 +32,17 @@ def pingTarget(ip, interface):
 
 
 def wakeGroup(group, interface):
+    # create threads for multithreading 
+    threads = []
     for target in group:
-        # this part will be multi threaded
         mac = target['mac']
         ip = target['ip']
-        wakeMac(mac, ip, interface)
+        thread = Thread(target=wakeMac, args=(mac, ip, interface))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        # wait for all threads to complete before continuing
+        thread.join()
     return
 
 
