@@ -14,22 +14,20 @@ def getArguments():
     return args
 
 
-def wakeMac(mac, interface):
-    #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
-    print('Would run etherwake -i %s %s' % (interface, mac))
+def wakeMac(mac, ip, interface):
+    if pingTarget(ip, interface) == 0:
+        print('%s is up!' % ip)
+    else:
+        #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
+        print('Would run etherwake -i %s %s' % (interface, mac))
     return
 
 
-def pingTarget(mac, ip, interface):
+def pingTarget(ip, interface):
     print('\nPinging %s...' % (ip))
     child = subprocess.Popen(['ping', '-c', '1', '%s' % (ip)], stdout=subprocess.PIPE)
     streamdata = child.communicate()[0]
-    # check exit code
-    if child.returncode != 0:
-        wakeMac(mac, interface)
-    else:
-        print('%s is up!' % (ip))
-
+    return child.returncode
 
 
 def wakeGroup(group, interface):
@@ -37,12 +35,13 @@ def wakeGroup(group, interface):
         # this part will be multi threaded
         mac = target['mac']
         ip = target['ip']
-        pingTarget(mac, ip, interface)
-        return
+        wakeMac(mac, ip, interface)
+    return
 
 
 
 def main():
+    # will need to fail gracefully if not given arguments
     args = getArguments()
     file = args.file
     interface = args.i
@@ -55,8 +54,25 @@ def main():
     # cycle through the groups and send wake command to macs in that group
     for group in data['groups']:
         wakeGroup(group, interface)
-            
+
+    print('\n\nDone :)\n')
+
+
+def test():
+    args = getArguments()
+    file = args.file
+    interface = args.i
+
+    with open(file) as f:
+        data = json.load(f)
+
+    for group in data['groups']:
+        print(group)
+        for target in group:
+            print('\t' + target['ip'])
+            print('\t' + target['mac'] + '\n')
 
 
 if __name__ == '__main__':
     main()
+    #test()
