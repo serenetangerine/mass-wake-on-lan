@@ -26,7 +26,7 @@ def wakeMac(mac, ip, interface):
 
 def pingTarget(ip, interface):
     print('\nPinging %s...' % (ip))
-    child = subprocess.Popen(['ping', '-c', '1', '%s' % (ip)], stdout=subprocess.PIPE)
+    child = subprocess.Popen(['ping', '-c', '1', '%s' % ip], stdout=subprocess.PIPE)
     streamdata = child.communicate()[0]
     return child.returncode
 
@@ -65,21 +65,9 @@ def main():
     print('\n\nDone :)\n')
 
 
-def test():
-    args = getArguments()
-    file = args.file
-    interface = args.i
-
-    with open(file) as f:
-        data = json.load(f)
-
-    for group in data['groups']:
-        print(group)
-        for target in group:
-            print('\t' + target['ip'])
-            print('\t' + target['mac'] + '\n')
-
 
 if __name__ == '__main__':
-    main()
-    #test()
+    try:
+        main()
+    except Exception as e:
+        print(e)
