@@ -16,11 +16,10 @@ def getArguments():
 
 
 def wakeMac(mac, ip, interface):
-    if pingTarget(ip, interface) == 0:
-        print('%s is up!' % ip)
-    else:
+    while pingTarget() != 0:
         #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
         print('Would run etherwake -i %s %s' % (interface, mac))
+    print('%s is up!' % ip)
     return
 
 
