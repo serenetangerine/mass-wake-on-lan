@@ -2,10 +2,11 @@
 
 import argparse
 import json
+import os
 import subprocess
-import sys
 import time
 from threading import Thread
+
 
 
 def getArguments():
@@ -24,8 +25,8 @@ def wakeMac(mac, ip, interface, delay, limit):
     while attempts <= limit:
         if attempts == limit:
             print('Could not wake %s :(' % ip)
-            sys.exit(1)
-        if pingTarget != 0:
+            os._exit(1)
+        if pingTarget(ip, interface) != 0:
             #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
             print('Would run etherwake -i %s %s' % (interface, mac))
             time.sleep(delay)
@@ -33,7 +34,6 @@ def wakeMac(mac, ip, interface, delay, limit):
         else:
             print('%s is up!' % ip)
             break
-
     return
 
 
@@ -78,7 +78,7 @@ def main():
         wakeGroup(group, interface, delay, limit)
 
     print('\n\nDone :)\n')
-    sys.exit(0)
+    os._exit(0)
 
 
 
