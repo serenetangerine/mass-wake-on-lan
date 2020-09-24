@@ -3,6 +3,8 @@
 import argparse
 import json
 import subprocess
+import sys
+import time
 from threading import Thread
 
 
@@ -10,15 +12,20 @@ def getArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help='interface from which to send wake on lan packets', type=str)
     parser.add_argument('-file', help='json file that contains target mac addresses', type=str)
+    parser.add_argument('-delay', help='delay (in seconds) before checking if a target is up before sending another wake packet', type=str)
+    parser.add_argument('-limit', help='number of attempts to wake a target before giving up', type=str)
 
     args = parser.parse_args()
     return args
 
 
-def wakeMac(mac, ip, interface):
-    while pingTarget() != 0:
+def wakeMac(mac, ip, interface, delay, limit):
+    attempts = 0
+    while (pingTarget() != 0) and (attempts <= limit):
         #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
         print('Would run etherwake -i %s %s' % (interface, mac))
+        time.sleep(delay)
+        attempts = attempts + 1
     print('%s is up!' % ip)
     return
 
@@ -30,13 +37,13 @@ def pingTarget(ip, interface):
     return child.returncode
 
 
-def wakeGroup(group, interface):
+def wakeGroup(group, interface, delay, limit):
     # create threads for multithreading 
     threads = []
     for target in group:
         mac = target['mac']
         ip = target['ip']
-        thread = Thread(target=wakeMac, args=(mac, ip, interface))
+        thread = Thread(target=wakeMac, args=(mac, ip, interface, delay, limit))
         thread.start()
         threads.append(thread)
     for thread in threads:
@@ -51,6 +58,8 @@ def main():
     args = getArguments()
     file = args.file
     interface = args.i
+    delay = args.delay
+    limit = args.limit
 
     # load json
     # will need validate that the json is structured properly before progressing
@@ -59,7 +68,7 @@ def main():
     
     # cycle through the groups and send wake command to macs in that group
     for group in data['groups']:
-        wakeGroup(group, interface)
+        wakeGroup(group, interface, delay, limit)
 
     print('\n\nDone :)\n')
 
