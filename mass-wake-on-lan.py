@@ -12,8 +12,8 @@ def getArguments():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help='interface from which to send wake on lan packets', type=str)
     parser.add_argument('-file', help='json file that contains target mac addresses', type=str)
-    parser.add_argument('-delay', help='delay (in seconds) before checking if a target is up before sending another wake packet', type=str)
-    parser.add_argument('-limit', help='number of attempts to wake a target before giving up', type=str)
+    parser.add_argument('-delay', help='delay (in seconds) before checking if a target is up before sending another wake packet', type=int)
+    parser.add_argument('-limit', help='number of attempts to wake a target before giving up', type=int)
 
     args = parser.parse_args()
     return args
@@ -21,12 +21,19 @@ def getArguments():
 
 def wakeMac(mac, ip, interface, delay, limit):
     attempts = 0
-    while (pingTarget() != 0) and (attempts <= limit):
-        #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
-        print('Would run etherwake -i %s %s' % (interface, mac))
-        time.sleep(delay)
-        attempts = attempts + 1
-    print('%s is up!' % ip)
+    while attempts <= limit:
+        if attempts == limit:
+            print('Could not wake %s :(' % ip)
+            sys.exit(1)
+        if pingTarget != 0:
+            #subprocess.Popen(['etherwake', '-i', '%s' % interface, '%s' % mac]):
+            print('Would run etherwake -i %s %s' % (interface, mac))
+            time.sleep(delay)
+            attempts = attempts + 1
+        else:
+            print('%s is up!' % ip)
+            break
+
     return
 
 
@@ -71,6 +78,7 @@ def main():
         wakeGroup(group, interface, delay, limit)
 
     print('\n\nDone :)\n')
+    sys.exit(0)
 
 
 
